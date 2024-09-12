@@ -126,21 +126,18 @@ if st.button('Predict Current Levels'):
 
     st.pyplot(fig)
 
-# Adjustable Time Range for Prediction (1 to 4 years)
-time_range = st.slider('Select Prediction Time Range (Years)', min_value=1, max_value=4, value=4)
-
 # Time Series Prediction using LSTM
-if st.button(f'Prediction of Nutrient Pollution Levels in Next {time_range} Years'):
-    st.subheader(f'Time Series Predictions for {time_range} Years')
+if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
+    st.subheader(f'Time Series Predictions for')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
     # Predict the next 4 years using LSTM
-    lstm_predictions = lstm_model.predict(lstm_input)[:time_range]  # Adjust based on the selected time range
+    lstm_predictions = lstm_model.predict(lstm_input)
 
     # Generate years for x-axis (Make sure it matches the number of predictions)
-    years = np.arange(2022, 2022 + time_range)  # Adjust years based on predictions
+    years = np.arange(2022, 2022 + len(lstm_predictions.flatten()))  # Adjust years based on predictions
     
     # Plot the time series predictions
     fig, ax = plt.subplots()
@@ -148,5 +145,5 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {time_range} Year
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title(f'Predicted Pollution Levels Over the Next {time_range} Years')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for')
     st.pyplot(fig)
