@@ -71,7 +71,7 @@ def display_alert_notification(overall_pollution):
     elif overall_pollution == "Heavy":
         st.error("Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental risks.")
 
-# Store input history and display trend analysis
+# Store input history and display history table (trend visualization removed)
 if 'history' not in st.session_state:
     st.session_state.history = []
 
@@ -100,15 +100,10 @@ if st.button('Predict Current Levels'):
         'Overall Pollution': overall_pollution
     }
     st.session_state.history.append(current_prediction)
-    
-    # Show input history
+
+    # Show input history as a table
     st.write("User Input History:")
     st.write(pd.DataFrame(st.session_state.history))
-
-    # Display trend analysis (line chart)
-    df_history = pd.DataFrame(st.session_state.history)
-    if not df_history.empty:
-        st.line_chart(df_history[['Orthophosphate', 'Ammonium', 'Nitrite/Nitrate', 'Chlorophyll']])
 
     # Display alert notifications
     display_alert_notification(overall_pollution)
