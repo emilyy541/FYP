@@ -15,47 +15,41 @@ lstm_model = tf.keras.models.load_model('lstm_model.h5')
 st.title('Early Detection of Nutrient Pollution in Gulf of Alaska')
 
 st.write("""
-    ### Enter the values for the following 11 input features:
-    1. **Orthophosphate** (mg/L)
-    2. **Ammonium** (mg/L)
-    3. **Nitrite/Nitrate** (mg/L)
-    4. **Chlorophyll** (µg/L)
-    5. **Temperature** (°C)
-    6. **Salinity**
-    7. **Dissolved Oxygen Content** (mg/L)
-    8. **Depth** (m)
-    9. **pH**
-    10. **Turbidity**
-    11. **Chlorophyll Fluorescence**
-""")
-
-# Inputs for the 11 features
-feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.0)
-feature_2 = st.number_input('Ammonium (mg/L)', value=0.0)
-feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.0)
-feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.0)
-feature_5 = st.number_input('Temperature (°C)', value=0.0)
-feature_6 = st.number_input('Salinity', value=0.0)
-feature_7 = st.number_input('Dissolved Oxygen Content (mg/L)', value=0.0)
-feature_8 = st.number_input('Depth (m)', value=0.0)
-feature_9 = st.number_input('pH', value=7.0)
-feature_10 = st.number_input('Turbidity', value=0.0)
-feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0)
+    ### Enter the values for the following variables:
+    """)
+    
+# Inputs for features based on the scale of the variables
+feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.03, format="%.3f")
+feature_2 = st.number_input('Ammonium (mg/L)', value=0.03, format="%.3f")
+feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.16, format="%.3f")
+feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.66, format="%.3f")
+feature_5 = st.number_input('Temperature (°C)', value=8.6, format="%.1f")
+feature_6 = st.number_input('Salinity (Sal)', value=3.24, format="%.3f")
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=10.0, format="%.1f")
+feature_8 = st.number_input('Depth (m)', value=0.59, format="%.3f")
+feature_9 = st.number_input('pH', value=2.83, format="%.3f")
+feature_10 = st.number_input('Turbidity (NTU)', value=0.69, format="%.3f")
+feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.92, format="%.3f")
 
 # Button to make prediction
 if st.button('Predict Current Levels'):
-    # Convert inputs into a 2D numpy array for the model (11 features)
-    input_features = np.array([[feature_1, feature_2, feature_3, feature_4, 
-                                feature_5, feature_6, feature_7, feature_8, 
-                                feature_9, feature_10, feature_11]])
-
-    # Display the input nutrient levels
+    # Convert inputs into a 2D numpy array for the model
+    input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
+    
+    # Display current nutrient levels
     st.write(f"**Orthophosphate (mg/L):** {feature_1}")
     st.write(f"**Ammonium (mg/L):** {feature_2}")
     st.write(f"**Nitrite/Nitrate (mg/L):** {feature_3}")
     st.write(f"**Chlorophyll (µg/L):** {feature_4}")
+    st.write(f"**Temperature (°C):** {feature_5}")
+    st.write(f"**Salinity:** {feature_6}")
+    st.write(f"**Dissolved Oxygen (mg/L):** {feature_7}")
+    st.write(f"**Depth (m):** {feature_8}")
+    st.write(f"**pH:** {feature_9}")
+    st.write(f"**Turbidity (NTU):** {feature_10}")
+    st.write(f"**Chlorophyll Fluorescence:** {feature_11}")
 
-    # Use Random Forest to predict current pollution levels for each target variable
+    # Use Random Forest to predict current pollution levels for each variable
     st.subheader('Predicted Nutrient Pollution Levels')
 
     for location in ['Homer', 'Seldovia']:
@@ -69,7 +63,7 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 3 Years'):
     st.subheader('Time Series Predictions')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
-    lstm_input = input_features.reshape((1, 1, input_features.shape[1]))
+    lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
     # Predict the next 3 years using LSTM
     lstm_predictions = lstm_model.predict(lstm_input)
