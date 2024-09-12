@@ -121,9 +121,6 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 3 Years'):
 # Ensure the years are displayed as integers
 #fig, ax = plt.subplots()
 #ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
-
-# Set x-axis ticks to be whole years
-ax.set_xticks([2022, 2023, 2024, 2025])  # Manually set the years
 ax.set_xlabel('Year')
 ax.set_ylabel('Nutrient Pollution Level (mg/L)')
 ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for {location}')
