@@ -39,8 +39,19 @@ thresholds = {
     'chlorophyll': 2.5
 }
 
-# Create input_features array
-input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
+# Choose location
+location = st.selectbox('Select Location', ['Homer', 'Seldovia'])
+
+# Use the pre-encoded columns (site_Homer and site_Seldovia)
+if location == 'Homer':
+    site_Homer = 1
+    site_Seldovia = 0
+else:
+    site_Homer = 0
+    site_Seldovia = 1
+
+# Create input_features array with site_Homer and site_Seldovia included
+input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11, site_Homer, site_Seldovia]])
 
 # Pollution Classification Logic
 def classify_overall_pollution(predictions):
@@ -60,9 +71,6 @@ def classify_overall_pollution(predictions):
         return "Moderate"
     else:
         return "Light"
-
-# Choose location
-location = st.selectbox('Select Location', ['Homer', 'Seldovia'])
 
 # Button to make current pollution prediction
 if st.button('Predict Current Levels'):
@@ -106,13 +114,13 @@ if st.button('Predict Current Levels'):
     st.pyplot(fig)
 
 # Time Series Prediction using LSTM
-if st.button('Prediction of Nutrient Pollution Levels in Next 5 Years'):
+if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
     st.subheader(f'Time Series Predictions for {location}')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    # Predict the next 5 years using LSTM
+    # Predict the next 4 years using LSTM
     lstm_predictions = lstm_model.predict(lstm_input)
 
     # Generate years for x-axis (Make sure it matches the number of predictions)
