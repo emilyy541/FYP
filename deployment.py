@@ -19,17 +19,17 @@ st.write("""
     """)
     
 # Inputs for features based on the scale of the variables
-feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.03, format="%.3f")
-feature_2 = st.number_input('Ammonium (mg/L)', value=0.03, format="%.3f")
-feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.16, format="%.3f")
-feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.66, format="%.3f")
-feature_5 = st.number_input('Temperature (°C)', value=8.6, format="%.1f")
-feature_6 = st.number_input('Salinity (Sal)', value=3.24, format="%.3f")
-feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=10.0, format="%.1f")
-feature_8 = st.number_input('Depth (m)', value=0.59, format="%.3f")
-feature_9 = st.number_input('pH', value=2.83, format="%.3f")
-feature_10 = st.number_input('Turbidity (NTU)', value=0.69, format="%.3f")
-feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.92, format="%.3f")
+feature_1 = st.number_input('Orthophosphate (mg/L)', format="%.3f")
+feature_2 = st.number_input('Ammonium (mg/L)', format="%.3f")
+feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', format="%.3f")
+feature_4 = st.number_input('Chlorophyll (µg/L)', format="%.3f")
+feature_5 = st.number_input('Temperature (°C)', format="%.1f")
+feature_6 = st.number_input('Salinity (Sal)', format="%.3f")
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', format="%.1f")
+feature_8 = st.number_input('Depth (m)', format="%.3f")
+feature_9 = st.number_input('pH', format="%.3f")
+feature_10 = st.number_input('Turbidity (NTU)', format="%.3f")
+feature_11 = st.number_input('Chlorophyll Fluorescence', format="%.3f")
 
 # Button to make prediction
 if st.button('Predict Current Levels'):
@@ -54,7 +54,7 @@ if st.button('Predict Current Levels'):
 
     for location in ['Homer', 'Seldovia']:
         st.write(f"**Location: {location}**")
-        for target in ['orthophosphate', 'Ammonium', 'Nitrite_Nitrate', 'Chlorophyll']:
+        for target in ['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']:
             prediction = rf_models[target].predict(input_features)
             st.write(f"Predicted {target.capitalize()} (mg/L): {prediction[0]}")
 
