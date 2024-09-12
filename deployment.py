@@ -19,8 +19,8 @@ st.write("""
 """)
 
 # Inputs for the variables (use number_input for better control over numeric data)
-feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.00, format="%.1f")
-feature_2 = st.number_input('Ammonium (mg/L)', value=0.00, format="%.1f")
+feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.0, format="%.1f")
+feature_2 = st.number_input('Ammonium (mg/L)', value=0.0, format="%.1f")
 feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.0, format="%.1f")
 feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.0, format="%.1f")
 feature_5 = st.number_input('Temperature (°C)', value=0.0, format="%.1f")
