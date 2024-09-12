@@ -39,19 +39,8 @@ thresholds = {
     'chlorophyll': 2.5
 }
 
-# Choose location
-location = st.selectbox('Select Location', ['Homer', 'Seldovia'])
-
-# Use the pre-encoded columns (site_Homer and site_Seldovia)
-if location == 'Homer':
-    site_Homer = 1
-    site_Seldovia = 0
-else:
-    site_Homer = 0
-    site_Seldovia = 1
-
-# Create input_features array with site_Homer and site_Seldovia included
-input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11, site_Homer, site_Seldovia]])
+# Create input_features array
+input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
 
 # Pollution Classification Logic
 def classify_overall_pollution(predictions):
