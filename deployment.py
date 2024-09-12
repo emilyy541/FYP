@@ -27,38 +27,87 @@ feature_5 = st.number_input('Temperature (°C)', step=0.1)
 feature_6 = st.number_input('Salinity (Sal)', format="%.3f")
 feature_7 = st.number_input('Dissolved Oxygen (mg/L)', step=0.1)
 feature_8 = st.number_input('Depth (m)', format="%.3f")
-feature_9 = st.number_input('pH', step=0.1)
+feature_9 = st.number_input('pH', format="%.3f")
 feature_10 = st.number_input('Turbidity (NTU)', format="%.3f")
-feature_11 = st.number_input('Chlorophyll Fluorescence', format="%.3f")
+feature_11 = st.number_input('Chlorophyll Fluorescence', step=0.1)
+
+# Define the threshold values
+thresholds = {
+    'orthophosphate': 0.5,
+    'ammonium': 0.5,
+    'nitrite_nitrate': 1.0,
+    'chlorophyll': 10.0
+}
+
+# Create input_features array
+input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
 
 # Pollution Classification Logic
-def classify_pollution(value):
-    """Classify pollution level based on predicted value."""
-    if value > 1.0:
+def classify_overall_pollution(predictions):
+    """Classify the overall pollution based on nutrient levels."""
+    status = {
+        'orthophosphate': "Light" if predictions['orthophosphate'] <= thresholds['orthophosphate'] else ("Moderate" if predictions['orthophosphate'] <= 1.0 else "Heavy"),
+        'ammonium': "Light" if predictions['ammonium'] <= thresholds['ammonium'] else ("Moderate" if predictions['ammonium'] <= 1.0 else "Heavy"),
+        'nitrite_nitrate': "Light" if predictions['nitrite_nitrate'] <= thresholds['nitrite_nitrate'] else ("Moderate" if predictions['nitrite_nitrate'] <= 2.0 else "Heavy"),
+        'chlorophyll': "Light" if predictions['chlorophyll'] <= thresholds['chlorophyll'] else ("Moderate" if predictions['chlorophyll'] <= 20.0 else "Heavy")
+    }
+    
+    pollution_levels = list(status.values())
+    
+    if "Heavy" in pollution_levels:
         return "Heavy"
-    elif 0.5 < value <= 1.0:
+    elif "Moderate" in pollution_levels:
         return "Moderate"
     else:
         return "Light"
 
-# Button to make prediction
-if st.button('Predict Current Levels'):
-    # Convert inputs into a 2D numpy array for the model
-    input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
-    
-    # Use Random Forest to predict current pollution levels for each variable
-    st.subheader('Predicted Nutrient Pollution Levels')
+# Choose location
+location = st.selectbox('Select Location', ['Homer', 'Seldovia'])
 
-    for location in ['Homer', 'Seldovia']:
-        st.write(f"**Location: {location}**")
-        for target in ['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']:
-            prediction = rf_models[target].predict(input_features)[0]
-            pollution_level = classify_pollution(prediction)  # Classify the pollution level
-            st.write(f"Predicted {target.capitalize()} (mg/L): {prediction:.3f} - {pollution_level} Pollution")
+# Button to make current pollution prediction
+if st.button('Predict Current Levels'):
+    st.subheader(f'Predicted Nutrient Pollution Levels for {location}:')
+
+    st.write(f"**Orthophosphate (mg/L):** {feature_1}")
+    st.write(f"**Ammonium (mg/L):** {feature_2}")
+    st.write(f"**Nitrite/Nitrate (mg/L):** {feature_3}")
+    st.write(f"**Chlorophyll (µg/L):** {feature_4}")
+
+    # Predict current nutrient pollution levels
+    predictions = {}
+    for target in ['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']:
+        predictions[target] = rf_models[target].predict(input_features)[0]
+    
+    overall_pollution = classify_overall_pollution(predictions)
+    
+    for nutrient, predicted_value in predictions.items():
+        threshold = thresholds[nutrient]
+        status = "Under Threshold" if predicted_value <= threshold else "Over Threshold"
+        st.write(f"Predicted {nutrient.capitalize()} (mg/L): {predicted_value:.3f} - {status}")
+
+    st.write(f"**Overall Nutrient Pollution: {overall_pollution}**")
+
+    # Graphical representation
+    fig, ax = plt.subplots()
+    nutrients = ['Orthophosphate', 'Ammonium', 'Nitrite/Nitrate', 'Chlorophyll']
+    values = [predictions['orthophosphate'], predictions['ammonium'], predictions['nitrite_nitrate'], predictions['chlorophyll']]
+    thresholds_list = [thresholds['orthophosphate'], thresholds['ammonium'], thresholds['nitrite_nitrate'], thresholds['chlorophyll']]
+    
+    ax.bar(nutrients, values, color='blue', label='Predicted Values')
+    ax.axhline(y=thresholds['orthophosphate'], color='red', linestyle='--', label='Orthophosphate Threshold')
+    ax.axhline(y=thresholds['ammonium'], color='green', linestyle='--', label='Ammonium Threshold')
+    ax.axhline(y=thresholds['nitrite_nitrate'], color='orange', linestyle='--', label='Nitrite/Nitrate Threshold')
+    ax.axhline(y=thresholds['chlorophyll'], color='purple', linestyle='--', label='Chlorophyll Threshold')
+    
+    ax.set_ylabel('Concentration (mg/L)')
+    ax.set_title(f'Nutrient Pollution Levels vs Thresholds for {location}')
+    ax.legend()
+    
+    st.pyplot(fig)
 
 # Time Series Prediction using LSTM
 if st.button('Prediction of Nutrient Pollution Levels in Next 3 Years'):
-    st.subheader('Time Series Predictions')
+    st.subheader(f'Time Series Predictions for {location}')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
@@ -74,5 +123,5 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 3 Years'):
     ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
     ax.set_xlabel('Year')
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title('Predicted Pollution Levels Over the Next 3 Years')
+    ax.set_title(f'Predicted Pollution Levels Over the Next 3 Years for {location}')
     st.pyplot(fig)
