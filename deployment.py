@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import pandas as pd
 
 # Load the saved Random Forest models for current prediction
 with open('random_forest_model.pkl', 'rb') as file:
@@ -61,9 +62,22 @@ def classify_overall_pollution(predictions):
     else:
         return "Light"
 
+# Function to display alert notifications based on pollution classification
+def display_alert_notification(overall_pollution):
+    if overall_pollution == "Light":
+        st.success("Light Pollution: The pollution levels are low, but it is essential to maintain monitoring.")
+    elif overall_pollution == "Moderate":
+        st.warning("Moderate Pollution: Pollution levels are moderate, indicating a potential risk. It is recommended to take precautionary measures.")
+    elif overall_pollution == "Heavy":
+        st.error("Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental risks.")
+
+# Store input history and display trend analysis
+if 'history' not in st.session_state:
+    st.session_state.history = []
+
 # Button to make current pollution prediction
 if st.button('Predict Current Levels'):
-    st.subheader(f'Predicted Nutrient Pollution Levels for {location}:')
+    st.subheader(f'Predicted Nutrient Pollution Levels:')
 
     st.write(f"**Orthophosphate (mg/L):** {feature_1}")
     st.write(f"**Ammonium (mg/L):** {feature_2}")
@@ -77,49 +91,66 @@ if st.button('Predict Current Levels'):
     
     overall_pollution = classify_overall_pollution(predictions)
     
-    for nutrient, predicted_value in predictions.items():
-        threshold = thresholds[nutrient]
-        status = "Under Threshold" if predicted_value <= threshold else "Over Threshold"
-        st.write(f"Predicted {nutrient.capitalize()} (mg/L): {predicted_value:.3f} - {status}")
+    # Store prediction in history
+    current_prediction = {
+        'Orthophosphate': feature_1,
+        'Ammonium': feature_2,
+        'Nitrite/Nitrate': feature_3,
+        'Chlorophyll': feature_4,
+        'Overall Pollution': overall_pollution
+    }
+    st.session_state.history.append(current_prediction)
+    
+    # Show input history
+    st.write("User Input History:")
+    st.write(pd.DataFrame(st.session_state.history))
 
-    st.write(f"**Overall Nutrient Pollution: {overall_pollution}**")
+    # Display trend analysis (line chart)
+    df_history = pd.DataFrame(st.session_state.history)
+    if not df_history.empty:
+        st.line_chart(df_history[['Orthophosphate', 'Ammonium', 'Nitrite/Nitrate', 'Chlorophyll']])
+
+    # Display alert notifications
+    display_alert_notification(overall_pollution)
 
     # Graphical representation
     fig, ax = plt.subplots()
     nutrients = ['Orthophosphate', 'Ammonium', 'Nitrite/Nitrate', 'Chlorophyll']
     values = [predictions['orthophosphate'], predictions['ammonium'], predictions['nitrite_nitrate'], predictions['chlorophyll']]
     thresholds_list = [thresholds['orthophosphate'], thresholds['ammonium'], thresholds['nitrite_nitrate'], thresholds['chlorophyll']]
-    
+
     ax.bar(nutrients, values, color='blue', label='Predicted Values')
     ax.axhline(y=thresholds['orthophosphate'], color='red', linestyle='--', label='Orthophosphate Threshold')
     ax.axhline(y=thresholds['ammonium'], color='green', linestyle='--', label='Ammonium Threshold')
     ax.axhline(y=thresholds['nitrite_nitrate'], color='orange', linestyle='--', label='Nitrite/Nitrate Threshold')
     ax.axhline(y=thresholds['chlorophyll'], color='purple', linestyle='--', label='Chlorophyll Threshold')
-    
+
     ax.set_ylabel('Concentration (mg/L)')
-    ax.set_title(f'Nutrient Pollution Levels vs Thresholds for {location}')
+    ax.set_title(f'Nutrient Pollution Levels vs Thresholds')
     ax.legend()
-    
+
     st.pyplot(fig)
 
-# Time Series Prediction using LSTM
-if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
-    st.subheader(f'Time Series Predictions for {location}')
+# Adjustable Time Range for Prediction
+time_range = st.slider('Select Prediction Time Range (Years)', min_value=1, max_value=10, value=4)
+
+# Time Series Prediction using LSTM with adjustable time range
+if st.button(f'Prediction of Nutrient Pollution Levels in Next {time_range} Years'):
+    st.subheader(f'Time Series Predictions for the next {time_range} years')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    # Predict the next 4 years using LSTM
+    # Predict the next time_range years using LSTM
     lstm_predictions = lstm_model.predict(lstm_input)
 
-    # Generate years for x-axis (Make sure it matches the number of predictions)
-    years = np.arange(2022, 2022 + len(lstm_predictions.flatten()))  # Adjust years based on predictions
-    
+    # Generate years for x-axis
+    years = np.arange(2022, 2022 + time_range)
+
     # Plot the time series predictions
     fig, ax = plt.subplots()
-    ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
+    ax.plot(years, lstm_predictions.flatten()[:time_range], marker='o', label='Predicted Pollution Level')
     ax.set_xlabel('Year')
-    ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for {location}')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {time_range} Years')
     st.pyplot(fig)
