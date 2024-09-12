@@ -18,18 +18,18 @@ st.write("""
     ### Enter the values for the following variables:
 """)
 
-# Inputs for the variables (use number_input for better control over numeric data)
-feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.0, format="%.1f")
-feature_2 = st.number_input('Ammonium (mg/L)', value=0.0, format="%.1f")
-feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.0, format="%.1f")
-feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.0, format="%.1f")
-feature_5 = st.number_input('Temperature (°C)', value=0.0, format="%.1f")
-feature_6 = st.number_input('Salinity (Sal)', value=0.0, format="%.1f")
-feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, format="%.1f")
-feature_8 = st.number_input('Depth (m)', value=0.0, format="%.1f")
-feature_9 = st.number_input('pH', value=0.0, format="%.1f")
-feature_10 = st.number_input('Turbidity (NTU)', value=0.0, format="%.1f")
-feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, format="%.1f")
+# Inputs for the variables (using number_input to ensure they are floats)
+feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.00, step=0.01)  # Two decimal places
+feature_2 = st.number_input('Ammonium (mg/L)', value=0.00, step=0.01)        # Two decimal places
+feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.0, step=0.1)   # One decimal place
+feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.0, step=0.1)       # One decimal place
+feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         # One decimal place
+feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)           # One decimal place
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1)  # One decimal place
+feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)                # One decimal place
+feature_9 = st.number_input('pH', value=0.0, step=0.1)                       # One decimal place
+feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)         # One decimal place
+feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) # One decimal place
 
 # Define the threshold values
 thresholds = {
