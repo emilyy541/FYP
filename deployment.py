@@ -149,7 +149,12 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {time_range} Year
         lstm_predictions.append(prediction[0])  # Assuming the model outputs a single step prediction
 
         # Update the input for the next prediction (feed the predicted value back)
-        current_input = np.append(current_input[:, 1:, :], [[prediction[0]]], axis=1)
+        # Replace only the last 4 features (predicted target variables) and keep other features intact
+        next_input = np.copy(current_input)  # Copy current_input to keep other features unchanged
+        next_input[0, 0, -4:] = prediction[0]  # Replace only the target variables in the last 4 columns
+
+        # Set current_input for the next iteration
+        current_input = next_input
 
     # Convert lstm_predictions to numpy array
     lstm_predictions = np.array(lstm_predictions)
