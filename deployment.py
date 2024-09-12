@@ -18,18 +18,18 @@ st.write("""
     ### Enter the values for the following variables:
 """)
 
-# Inputs without the increment buttons (step removed for free typing)
-feature_1 = float(st.text_input('Orthophosphate (mg/L)', value="0.00"))
-feature_2 = float (st.text_input('Ammonium (mg/L)', value="0.00"))
-feature_3 = float (st.text_input('Nitrite/Nitrate (mg/L)', value="0.0"))
-feature_4 = float (st.text_input('Chlorophyll (µg/L)', value="0.0"))
-feature_5 = float (st.number_input('Temperature (°C)', value="0.0"))
-feature_6 = float (st.text_input('Salinity (Sal)', value="0.0"))
-feature_7 = float (st.text_input('Dissolved Oxygen (mg/L)', value="0.0"))
-feature_8 = float (st.text_input('Depth (m)', value="0.0"))
-feature_9 = float (st.text_input('pH', value="0.0"))
-feature_10 = float (st.text_input('Turbidity (NTU)', value="0.0"))
-feature_11 = float (st.text_input('Chlorophyll Fluorescence', value="0.0"))
+# Inputs for the variables (use number_input for better control over numeric data)
+feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.00, format="%.2f")
+feature_2 = st.number_input('Ammonium (mg/L)', value=0.00, format="%.2f")
+feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.0, format="%.1f")
+feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.0, format="%.1f")
+feature_5 = st.number_input('Temperature (°C)', value=0.0, format="%.1f")
+feature_6 = st.number_input('Salinity (Sal)', value=0.0, format="%.1f")
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, format="%.1f")
+feature_8 = st.number_input('Depth (m)', value=0.0, format="%.1f")
+feature_9 = st.number_input('pH', value=0.0, format="%.1f")
+feature_10 = st.number_input('Turbidity (NTU)', value=0.0, format="%.1f")
+feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, format="%.1f")
 
 # Define the threshold values
 thresholds = {
@@ -112,11 +112,16 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 3 Years'):
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    lstm_predictions = lstm_predictions[:3]
-    years = np.arange(2024, 2027) 
+    # Predict the next 3 years using LSTM
+    lstm_predictions = lstm_model.predict(lstm_input)
+
+    # Generate years for x-axis (Make sure it matches the number of predictions)
+    years = np.arange(2024, 2024 + len(lstm_predictions.flatten()))  # Adjust years based on predictions
+    
+    # Plot the time series predictions
     fig, ax = plt.subplots()
     ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
     ax.set_xlabel('Year')
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title(f'Predicted Pollution Levels Over the Next 3 Years for {location}')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for {location}')
     st.pyplot(fig)
