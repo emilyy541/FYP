@@ -33,10 +33,10 @@ feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) # 
 
 # Define the threshold values
 thresholds = {
-    'orthophosphate': 0.5,
-    'ammonium': 0.5,
-    'nitrite_nitrate': 1.0,
-    'chlorophyll': 10.0
+    'orthophosphate': 0.03,
+    'ammonium': 0.03,
+    'nitrite_nitrate': 0.15,
+    'chlorophyll': 2.5
 }
 
 # Create input_features array
