@@ -132,7 +132,7 @@ if st.button('Predict Current Levels'):
     st.pyplot(fig)
 
 # Adjustable Time Range for Prediction
-#time_range = st.slider('Select Prediction Time Range (Years)', min_value=1, max_value=10, value=4)
+time_range = st.slider('Select Prediction Time Range (Years)', min_value=1, max_value=10, value=4)
 
 # Time Series Prediction using LSTM with adjustable time range
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {time_range} Years'):
