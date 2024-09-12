@@ -128,7 +128,7 @@ if st.button('Predict Current Levels'):
 
 # Time Series Prediction using LSTM
 if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
-    st.subheader(f'Time Series Predictions for')
+    st.subheader(f'Time Series Predictions for Nutrient Pollution')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
