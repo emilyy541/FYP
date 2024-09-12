@@ -115,15 +115,19 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 3 Years'):
     # Predict the next 3 years using LSTM
     lstm_predictions = lstm_model.predict(lstm_input)
     
-# Generate years for x-axis
+    # Generate years for x-axis (2022-2025)
     years = np.arange(2022, 2025)
+
+    # Create a figure and axis for plotting
+    fig, ax = plt.subplots()
     
-# Ensure the years are displayed as integers
-#fig, ax = plt.subplots()
-#ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
-ax.set_xlabel('Year')
-ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for {location}')
-
-st.pyplot(fig)
-
+    # Plot the time series predictions
+    ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
+    
+    # Customize the plot
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Nutrient Pollution Level (mg/L)')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for {location}')
+    
+    # Display the plot in Streamlit
+    st.pyplot(fig)
