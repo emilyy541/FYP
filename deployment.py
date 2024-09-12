@@ -19,17 +19,17 @@ st.write("""
 """)
 
 # Inputs for features based on the scale of the variables
-feature_1 = st.number_input('Orthophosphate (mg/L)', step=0.001)  
-feature_2 = st.number_input('Ammonium (mg/L)', step=0.001)        
-feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', step=0.001) 
-feature_4 = st.number_input('Chlorophyll (µg/L)', step=0.001)     
-feature_5 = st.number_input('Temperature (°C)', step=0.1)         
-feature_6 = st.number_input('Salinity (Sal)', step=0.001)         
-feature_7 = st.number_input('Dissolved Oxygen (mg/L)', step=0.1)  
-feature_8 = st.number_input('Depth (m)', step=0.1)                
-feature_9 = st.number_input('pH', step=0.1)                       
-feature_10 = st.number_input('Turbidity (NTU)', step=0.001)       
-feature_11 = st.number_input('Chlorophyll Fluorescence', step=0.1) 
+feature_1 = st.number_input('Orthophosphate (mg/L)', format="%.3f")
+feature_2 = st.number_input('Ammonium (mg/L)', format="%.3f")
+feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', format="%.3f")
+feature_4 = st.number_input('Chlorophyll (µg/L)', format="%.3f")
+feature_5 = st.number_input('Temperature (°C)', step=0.1)
+feature_6 = st.number_input('Salinity (Sal)', format="%.3f")
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', step=0.1)
+feature_8 = st.number_input('Depth (m)', step=0.1)
+feature_9 = st.number_input('pH', step=0.1)
+feature_10 = st.number_input('Turbidity', step=0.1)
+feature_11 = st.number_input('Chlorophyll Fluorescence', step=0.1)
 
 # Define the threshold values
 thresholds = {
