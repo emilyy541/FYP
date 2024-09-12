@@ -21,15 +21,15 @@ st.write("""
 # Inputs without the increment buttons (step removed for free typing)
 feature_1 = st.text_input('Orthophosphate (mg/L)', value="0.00")
 feature_2 = st.text_input('Ammonium (mg/L)', value="0.00")
-feature_3 = st.text_input('Nitrite/Nitrate (mg/L)', value="0.0")
-feature_4 = st.text_input('Chlorophyll (µg/L)', value="0.0")
+feature_3 = st.text_input('Nitrite/Nitrate (mg/L)', value="0.00")
+feature_4 = st.text_input('Chlorophyll (µg/L)', value="0.00")
 feature_5 = st.number_input('Temperature (°C)', value="0.0")
-feature_6 = st.text_input('Salinity (Sal)', value="0.0")
-feature_7 = st.text_input('Dissolved Oxygen (mg/L)', value="0.0")
-feature_8 = st.text_input('Depth (m)', value="0.0")
-feature_9 = st.text_input('pH', value="0.0")
-feature_10 = st.text_input('Turbidity (NTU)', value="0.0")
-feature_11 = st.text_input('Chlorophyll Fluorescence', value="0.0")
+feature_6 = st.text_input('Salinity (Sal)', value="0.00")
+feature_7 = st.text_input('Dissolved Oxygen (mg/L)', value="0.00")
+feature_8 = st.text_input('Depth (m)', value="0.00")
+feature_9 = st.text_input('pH', value="0.00")
+feature_10 = st.text_input('Turbidity (NTU)', value="0.00")
+feature_11 = st.text_input('Chlorophyll Fluorescence', value="0.00")
 
 # Define the threshold values
 thresholds = {
