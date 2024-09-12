@@ -145,11 +145,17 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {time_range} Year
         # Predict next year
         prediction = lstm_model.predict(current_input)
         
-        # Add prediction to the list
-        lstm_predictions.append(prediction[0][0])
+        # Extract predicted values (adjust this depending on your model's output shape)
+        predicted_values = prediction[0]  # Adjust the index if necessary
         
-        # Update the input with the latest prediction to feed into the model
-        current_input = np.append(current_input[:, 1:, :], [[prediction[0]]], axis=1)
+        # Add prediction to the list
+        lstm_predictions.append(predicted_values)
+        
+        # Create a new input by combining current features and predicted values
+        # You need to reshape the predicted values to match the required input shape
+        # In this example, we assume the model outputs 4 predictions, so we concatenate them properly
+        next_input = np.concatenate((current_input[:, 1:, :], predicted_values.reshape((1, 1, -1))), axis=1)
+        current_input = next_input
 
     # Convert predictions list to a numpy array
     lstm_predictions = np.array(lstm_predictions)
