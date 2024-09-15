@@ -19,9 +19,6 @@ st.write("""
     ### Enter the values for the following variables:
 """)
 
-# Add a dropdown for location selection
-location = st.selectbox('Select Location:', ['Homer', 'Seldovia'])
-
 # Inputs for the variables (using number_input to ensure they are floats)
 feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.00, step=0.01)  # Two decimal places
 feature_2 = st.number_input('Ammonium (mg/L)', value=0.00, step=0.01)        # Two decimal places
@@ -43,13 +40,8 @@ thresholds = {
     'chlorophyll': 2.5
 }
 
-# Create input_features array and include the location as a binary feature
-if location == 'Homer':
-    location_feature = [1, 0]  # site_Homer = 1, site_Seldovia = 0
-else:
-    location_feature = [0, 1]  # site_Homer = 0, site_Seldovia = 1
-
-input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11] + location_feature])
+# Create input_features array
+input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
 
 # Pollution Classification Logic
 def classify_overall_pollution(predictions):
@@ -85,7 +77,7 @@ if 'history' not in st.session_state:
 
 # Button to make current pollution prediction
 if st.button('Predict Current Levels'):
-    st.subheader(f'Predicted Nutrient Pollution Levels for {location}:')
+    st.subheader(f'Predicted Nutrient Pollution Levels:')
 
     st.write(f"**Orthophosphate (mg/L):** {feature_1}")
     st.write(f"**Ammonium (mg/L):** {feature_2}")
@@ -101,7 +93,6 @@ if st.button('Predict Current Levels'):
     
     # Store prediction in history
     current_prediction = {
-        'Location': location,
         'Orthophosphate': feature_1,
         'Ammonium': feature_2,
         'Nitrite/Nitrate': feature_3,
@@ -130,14 +121,14 @@ if st.button('Predict Current Levels'):
     ax.axhline(y=thresholds['chlorophyll'], color='purple', linestyle='--', label='Chlorophyll Threshold')
 
     ax.set_ylabel('Concentration (mg/L)')
-    ax.set_title(f'Nutrient Pollution Levels vs Thresholds for {location}')
+    ax.set_title(f'Nutrient Pollution Levels vs Thresholds')
     ax.legend()
 
     st.pyplot(fig)
 
 # Time Series Prediction using LSTM
 if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
-    st.subheader(f'Time Series Predictions for Nutrient Pollution at {location}')
+    st.subheader(f'Time Series Predictions for Nutrient Pollution')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
@@ -154,5 +145,5 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for {location}')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for')
     st.pyplot(fig)
