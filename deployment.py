@@ -157,9 +157,12 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
         # Predict the next time step
         pred = lstm_model.predict(lstm_input)
         lstm_predictions.append(pred[0])  # Store the prediction
+
         # Update the input for the next prediction
-        lstm_input = np.append(lstm_input[:,1:,:], pred.reshape(1, 1, -1), axis=1)
+        # Here, pred is reshaped and replaces the original lstm_input, so we use only the predicted values
+        lstm_input = pred.reshape(1, 1, input_features.shape[1])
     
+    # Flatten the predictions to match with years array
     lstm_predictions = np.array(lstm_predictions).flatten()
 
     # Generate years for x-axis based on the number of years selected
