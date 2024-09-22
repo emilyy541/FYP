@@ -19,45 +19,41 @@ st.write("""
     ### Enter the values for the following variables:
 """)
 
-# Inputs for the variables (using number_input to ensure they are floats)
-feature_1 = st.number_input('Orthophosphate (mg/L)', value=0.00, step=0.01)  # Two decimal places
-feature_2 = st.number_input('Ammonium (mg/L)', value=0.00, step=0.01)        # Two decimal places
-feature_3 = st.number_input('Nitrite/Nitrate (mg/L)', value=0.0, step=0.1)   # One decimal place
-feature_4 = st.number_input('Chlorophyll (µg/L)', value=0.0, step=0.1)       # One decimal place
-feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         # One decimal place
-feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)           # One decimal place
-feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1)  # One decimal place
-feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)                # One decimal place
-feature_9 = st.number_input('pH', value=0.0, step=0.1)                       # One decimal place
-feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)         # One decimal place
-feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) # One decimal place
+# Inputs for the feature variables
+feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         
+feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)           
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1) 
+feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)                
+feature_9 = st.number_input('pH', value=0.0, step=0.1)                       
+feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)         
+feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) 
+
+# Combine feature inputs into an array
+input_features = np.array([[feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
 
 # Define the threshold values
 thresholds = {
-    'orthophosphate': 0.03,
-    'ammonium': 0.03,
-    'nitrite_nitrate': 0.15,
-    'chlorophyll': 2.5
+    'orthophosphate': 0.030,  
+    'ammonium': 0.028,        
+    'nitrite_nitrate': 0.158, 
+    'chlorophyll': 1.865      
 }
 
-# Create input_features array
-input_features = np.array([[feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
-
 # Pollution Classification Logic
-def classify_overall_pollution(predictions):
-    """Classify the overall pollution based on nutrient levels."""
-    status = {
-        'orthophosphate': "Light" if predictions['orthophosphate'] <= thresholds['orthophosphate'] else ("Moderate" if predictions['orthophosphate'] <= 1.0 else "Heavy"),
-        'ammonium': "Light" if predictions['ammonium'] <= thresholds['ammonium'] else ("Moderate" if predictions['ammonium'] <= 1.0 else "Heavy"),
-        'nitrite_nitrate': "Light" if predictions['nitrite_nitrate'] <= thresholds['nitrite_nitrate'] else ("Moderate" if predictions['nitrite_nitrate'] <= 2.0 else "Heavy"),
-        'chlorophyll': "Light" if predictions['chlorophyll'] <= thresholds['chlorophyll'] else ("Moderate" if predictions['chlorophyll'] <= 20.0 else "Heavy")
-    }
-    
-    pollution_levels = list(status.values())
-    
-    if "Heavy" in pollution_levels:
+def classify_variable_level(value, variable):
+    """Classify each variable based on its level."""
+    if value <= thresholds[variable]:
+        return "Light"
+    elif value <= (thresholds[variable] * 1.5):  # Custom range for moderate
+        return "Moderate"
+    else:
         return "Heavy"
-    elif "Moderate" in pollution_levels:
+
+def classify_overall_pollution(individual_status):
+    """Classify overall nutrient pollution based on all variables."""
+    if "Heavy" in individual_status.values():
+        return "Heavy"
+    elif list(individual_status.values()).count("Moderate") >= 2:
         return "Moderate"
     else:
         return "Light"
@@ -71,32 +67,40 @@ def display_alert_notification(overall_pollution):
     elif overall_pollution == "Heavy":
         st.error("Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental risks.")
 
-# Store input history and display history table (trend visualization removed)
+# Store input history and display history table
 if 'history' not in st.session_state:
     st.session_state.history = []
 
 # Button to make current pollution prediction
 if st.button('Predict Current Levels'):
     st.subheader(f'Predicted Nutrient Pollution Levels:')
-
-    st.write(f"**Orthophosphate (mg/L):** {feature_1}")
-    st.write(f"**Ammonium (mg/L):** {feature_2}")
-    st.write(f"**Nitrite/Nitrate (mg/L):** {feature_3}")
-    st.write(f"**Chlorophyll (µg/L):** {feature_4}")
-
-    # Predict current nutrient pollution levels
+    
+    # Predict current nutrient pollution levels using Random Forest models
     predictions = {}
+    individual_status = {}
     for target in ['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']:
         predictions[target] = rf_models[target].predict(input_features)[0]
+        individual_status[target] = classify_variable_level(predictions[target], target)
     
-    overall_pollution = classify_overall_pollution(predictions)
+    # Display individual predictions and levels
+    for target, level in individual_status.items():
+        st.write(f"**{target.capitalize()} (mg/L):** {predictions[target]:.2f} - {level}")
+    
+    overall_pollution = classify_overall_pollution(individual_status)
     
     # Store prediction in history
     current_prediction = {
-        'Orthophosphate': feature_1,
-        'Ammonium': feature_2,
-        'Nitrite/Nitrate': feature_3,
-        'Chlorophyll': feature_4,
+        'Temperature (°C)': feature_5,
+        'Salinity (Sal)': feature_6,
+        'Dissolved Oxygen (mg/L)': feature_7,
+        'Depth (m)': feature_8,
+        'pH': feature_9,
+        'Turbidity (NTU)': feature_10,
+        'Chlorophyll Fluorescence': feature_11,
+        'Orthophosphate': predictions['orthophosphate'],
+        'Ammonium': predictions['ammonium'],
+        'Nitrite/Nitrate': predictions['nitrite_nitrate'],
+        'Chlorophyll': predictions['chlorophyll'],
         'Overall Pollution': overall_pollution
     }
     st.session_state.history.append(current_prediction)
@@ -115,10 +119,8 @@ if st.button('Predict Current Levels'):
     thresholds_list = [thresholds['orthophosphate'], thresholds['ammonium'], thresholds['nitrite_nitrate'], thresholds['chlorophyll']]
 
     ax.bar(nutrients, values, color='blue', label='Predicted Values')
-    ax.axhline(y=thresholds['orthophosphate'], color='red', linestyle='--', label='Orthophosphate Threshold')
-    ax.axhline(y=thresholds['ammonium'], color='green', linestyle='--', label='Ammonium Threshold')
-    ax.axhline(y=thresholds['nitrite_nitrate'], color='orange', linestyle='--', label='Nitrite/Nitrate Threshold')
-    ax.axhline(y=thresholds['chlorophyll'], color='purple', linestyle='--', label='Chlorophyll Threshold')
+    for nutrient, threshold in zip(nutrients, thresholds_list):
+        ax.axhline(y=threshold, linestyle='--', label=f'{nutrient} Threshold')
 
     ax.set_ylabel('Concentration (mg/L)')
     ax.set_title(f'Nutrient Pollution Levels vs Thresholds')
@@ -145,5 +147,5 @@ if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years for')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years')
     st.pyplot(fig)
