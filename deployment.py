@@ -19,7 +19,10 @@ st.write("""
     ### Enter the values for the following variables:
 """)
 
-# Inputs for the feature variables
+# Location selection for site
+site = st.selectbox('Select Site Location', ['Homer', 'Seldovia', 'Bear Cove'])
+
+# Inputs for the feature variables (using number_input to ensure they are floats)
 feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         
 feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)           
 feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1) 
@@ -28,15 +31,24 @@ feature_9 = st.number_input('pH', value=0.0, step=0.1)
 feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)         
 feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) 
 
-# Combine feature inputs into an array
-input_features = np.array([[feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11]])
+# Placeholder values for engineered features
+feature_12 = 0.0  
+feature_13 = 0.0  
 
-# Define the threshold values
+# Convert location to numerical value if needed (encode location)
+location_mapping = {'Homer': 1, 'Seldovia': 0}
+location_feature = location_mapping[site]
+
+# Combine all features into an array
+input_features = np.array([[feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, feature_11,
+                            feature_12, feature_13, location_feature]])
+
+# Define the threshold values (as required)
 thresholds = {
-    'orthophosphate': 0.030,  
-    'ammonium': 0.028,        
-    'nitrite_nitrate': 0.158, 
-    'chlorophyll': 1.865      
+    'orthophosphate': 0.030,  # Adjusted based on 75th percentile
+    'ammonium': 0.028,        # Adjusted based on 75th percentile
+    'nitrite_nitrate': 0.158, # Adjusted based on 75th percentile
+    'chlorophyll': 1.865      # Adjusted based on 75th percentile
 }
 
 # Pollution Classification Logic
@@ -90,6 +102,7 @@ if st.button('Predict Current Levels'):
     
     # Store prediction in history
     current_prediction = {
+        'Site': site,
         'Temperature (°C)': feature_5,
         'Salinity (Sal)': feature_6,
         'Dissolved Oxygen (mg/L)': feature_7,
