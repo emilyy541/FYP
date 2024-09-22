@@ -20,7 +20,7 @@ st.write("""
 """)
 
 # Location selection for site
-site = st.selectbox('Select Site Location', ['Homer', 'Seldovia', 'Bear Cove'])
+site = st.selectbox('Select Site Location', ['Homer', 'Seldovia'])
 
 # Inputs for the feature variables (using number_input to ensure they are floats)
 feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         
@@ -141,24 +141,27 @@ if st.button('Predict Current Levels'):
 
     st.pyplot(fig)
 
-# Time Series Prediction using LSTM
-if st.button('Prediction of Nutrient Pollution Levels in Next 4 Years'):
-    st.subheader(f'Time Series Predictions for Nutrient Pollution')
+# Time Series Prediction using LSTM with adjustable years
+# Add a slider to select the number of years for prediction
+num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=10, value=4)
+
+if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
+    st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    # Predict the next 4 years using LSTM
+    # Predict the next 'num_years' using LSTM
     lstm_predictions = lstm_model.predict(lstm_input)
-
-    # Generate years for x-axis (Make sure it matches the number of predictions)
-    years = np.arange(2022, 2022 + len(lstm_predictions.flatten()))  # Adjust years based on predictions
     
+    # Generate years for x-axis based on the number of years selected
+    years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
+
     # Plot the time series predictions
     fig, ax = plt.subplots()
-    ax.plot(years, lstm_predictions.flatten(), marker='o', label='Predicted Pollution Level')
+    ax.plot(years, lstm_predictions.flatten()[:num_years], marker='o', label='Predicted Pollution Level')
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
-    ax.set_title(f'Predicted Pollution Levels Over the Next {len(years)} Years')
+    ax.set_title(f'Predicted Pollution Levels Over the Next {num_years} Years')
     st.pyplot(fig)
