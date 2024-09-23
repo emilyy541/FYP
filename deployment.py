@@ -146,11 +146,12 @@ num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
+    # Predict the next 'num_years' using LSTM
+    lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
+    
     # Prepare the input for LSTM (reshape as required by LSTM input)
     hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
 
-    # Predict the next 'num_years' using LSTM
-    lstm_predictions = lstm_model.predict(lstm_input)
     
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
