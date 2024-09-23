@@ -152,6 +152,7 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
     # Prepare the input for LSTM (reshape as required by LSTM input)
     hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
 
+    hybrid_predictions = hybrid_predictions.reshape(num_years, len(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']))
     
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
