@@ -158,16 +158,23 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
     # Predict the next 'num_years' using Hybrid Neural Network model
+    # Ensure the prediction output matches the required shape
     hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
-    
+
+    # Check the shape of the predictions
+    st.write(f"Shape of hybrid predictions: {hybrid_predictions.shape}")  # Debugging line
+
+    # Assuming hybrid_predictions has shape (1, num_years, number_of_variables)
+    # Adjust indexing accordingly
+    hybrid_predictions = hybrid_predictions.reshape(num_years, len(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']))
+
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
 
     # Plot the time series predictions
     fig, ax = plt.subplots()
     for i, variable in enumerate(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']):
-        # hybrid_predictions[:, i] -> adjusted for each variable and corresponding year
-        ax.plot(years, hybrid_predictions[:, i][:num_years], marker='o', label=f'Predicted {variable.capitalize()}')
+        ax.plot(years, hybrid_predictions[:, i], marker='o', label=f'Predicted {variable.capitalize()}')  # Corrected indexing
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
