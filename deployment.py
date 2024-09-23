@@ -23,17 +23,17 @@ st.write("""
 site = st.selectbox('Select Site Location', ['Homer', 'Seldovia'])
 
 # Inputs for the feature variables (using number_input to ensure they are floats)
-feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         
-feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)           
-feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1) 
-feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)                
-feature_9 = st.number_input('pH', value=0.0, step=0.1)                       
-feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)         
-feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) 
+feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)
+feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1)
+feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)
+feature_9 = st.number_input('pH', value=0.0, step=0.1)
+feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)
+feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1)
 
 # Placeholder values for engineered features
-feature_12 = 0.0  
-feature_13 = 0.0  
+feature_12 = 0.0
+feature_13 = 0.0
 
 # Convert location to numerical value if needed (encode location)
 location_mapping = {'Homer': 1, 'Seldovia': 0}
@@ -166,7 +166,8 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
     # Plot the time series predictions
     fig, ax = plt.subplots()
     for i, variable in enumerate(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']):
-        ax.plot(years, hybrid_predictions[0, :, i][:num_years], marker='o', label=f'Predicted {variable.capitalize()}')
+        # hybrid_predictions[:, i] -> adjusted for each variable and corresponding year
+        ax.plot(years, hybrid_predictions[:, i][:num_years], marker='o', label=f'Predicted {variable.capitalize()}')
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
