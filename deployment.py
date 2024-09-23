@@ -73,11 +73,19 @@ def classify_overall_pollution(individual_status):
 # Function to display alert notifications based on pollution classification
 def display_alert_notification(overall_pollution):
     if overall_pollution == "Light":
-        st.success("Light Pollution: The pollution levels are low, but it is essential to maintain monitoring.")
+        st.success("""Light Pollution: The pollution levels are low, but it is essential to maintain monitoring 
+                      to protect marine ecosystems and ensure the sustainability of coastal environments. 
+                      Preserving healthy water quality is crucial for supporting marine life and the well-being 
+                      of coastal communities.""")
     elif overall_pollution == "Moderate":
-        st.warning("Moderate Pollution: Pollution levels are moderate, indicating a potential risk. It is recommended to take precautionary measures.")
+        st.warning("""Moderate Pollution: Pollution levels are moderate, indicating a potential risk to marine biodiversity 
+                      and coastal habitats. Implementing precautionary measures now can help prevent further degradation 
+                      and support the resilience of marine ecosystems as well as the livelihoods that depend on them.""")
     elif overall_pollution == "Heavy":
-        st.error("Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental risks.")
+        st.error("""Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental 
+                    risks and prevent severe impacts on marine life and coastal resources. Addressing this issue is crucial 
+                    for preserving the health of our oceans and the communities that rely on them for sustenance 
+                    and economic activities.""")
 
 # Store input history and display history table
 if 'history' not in st.session_state:
@@ -140,28 +148,29 @@ if st.button('Predict Current Levels'):
     ax.legend()
     st.pyplot(fig)
 
-# Time Series Prediction using LSTM with adjustable years
+# Time Series Prediction using Hybrid Neural Network with adjustable years
 num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=4, value=4)
 
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
-    # Predict the next 'num_years' using LSTM
+    # Prepare the input for Hybrid Neural Network (reshape LSTM input as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
-    
-    # Prepare the input for LSTM (reshape as required by LSTM input)
-    hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
 
-    hybrid_predictions = hybrid_predictions.reshape(num_years, len(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']))
+    # Predict the next 'num_years' using Hybrid Neural Network model
+    hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
     
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
 
     # Plot the time series predictions
     fig, ax = plt.subplots()
-    ax.plot(years, lstm_predictions.flatten()[:num_years], marker='o', label='Predicted Pollution Level')
+    for i, variable in enumerate(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']):
+        ax.plot(years, hybrid_predictions[0, :, i][:num_years], marker='o', label=f'Predicted {variable.capitalize()}')
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
     ax.set_title(f'Predicted Pollution Levels Over the Next {num_years} Years')
+    ax.legend()
     st.pyplot(fig)
+
