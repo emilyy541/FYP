@@ -142,8 +142,7 @@ if st.button('Predict Current Levels'):
     st.pyplot(fig)
 
 # Time Series Prediction using LSTM with adjustable years
-# Add a slider to select the number of years for prediction
-num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=10, value=10)
+num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=10, value=4)
 
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
@@ -158,9 +157,16 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
         pred = lstm_model.predict(lstm_input)
         lstm_predictions.append(pred[0][0])  # Store the first predicted value
 
+        # Ensure that pred has the correct number of features before concatenating
+        if pred.shape[2] < lstm_input.shape[2]:
+            # If pred has fewer features, pad it with zeros
+            pred = np.pad(pred, ((0, 0), (0, 0), (0, lstm_input.shape[2] - pred.shape[2])), mode='constant')
+        elif pred.shape[2] > lstm_input.shape[2]:
+            # If pred has more features, trim it
+            pred = pred[:, :, :lstm_input.shape[2]]
+
         # Update the input for the next prediction
-        # Use the last prediction as input for the next prediction step
-        lstm_input = np.append(lstm_input[:, 1:, :], pred.reshape(1, 1, -1), axis=1)
+        lstm_input = np.append(lstm_input[:, 1:, :], pred.reshape(1, 1, lstm_input.shape[2]), axis=1)
 
     # Flatten the predictions to match with years array
     lstm_predictions = np.array(lstm_predictions).flatten()
@@ -176,4 +182,5 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
     ax.set_title(f'Predicted Pollution Levels Over the Next {num_years} Years')
     st.pyplot(fig)
+
 
