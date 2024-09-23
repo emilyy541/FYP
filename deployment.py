@@ -143,7 +143,7 @@ if st.button('Predict Current Levels'):
 
 # Time Series Prediction using LSTM with adjustable years
 # Add a slider to select the number of years for prediction
-num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=10, value=4)
+num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=10, value=10)
 
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
