@@ -9,8 +9,8 @@ import pandas as pd
 with open('random_forest_model.pkl', 'rb') as file:
     rf_models = pickle.load(file)
 
-# Load the Hybrid Neural Network model for time series prediction
-hybrid_nn_model = tf.keras.models.load_model('hybrid_nn_model.h5')
+# Load the LSTM model for time series prediction
+lstm_model = tf.keras.models.load_model('lstm_model.h5')
 
 # Streamlit app interface
 st.title('Early Detection of Nutrient Pollution in Gulf of Alaska')
@@ -86,7 +86,7 @@ def display_alert_notification(overall_pollution):
                     risks and prevent severe impacts on marine life and coastal resources. Addressing this issue is crucial 
                     for preserving the health of our oceans and the communities that rely on them for sustenance 
                     and economic activities.""")
-
+        
 # Store input history and display history table
 if 'history' not in st.session_state:
     st.session_state.history = []
@@ -148,29 +148,26 @@ if st.button('Predict Current Levels'):
     ax.legend()
     st.pyplot(fig)
 
-# Assuming you have the years and the hybrid_predictions ready
-
-# Time Series Prediction using Hybrid Neural Network with adjustable years
+# Time Series Prediction using LSTM with adjustable years
 num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=4, value=4)
 
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
-    # Prepare the input for the Hybrid Neural Network (reshape as required)
+    # Prepare the input for LSTM (reshape as required by LSTM input)
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    # Predict the next 'num_years' using Hybrid Neural Network model
-    hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
+    # Predict the next 'num_years' using LSTM
+    lstm_predictions = lstm_model.predict(lstm_input)
     
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
 
-    # Plot the time series predictions for a single variable (e.g., orthophosphate)
+    # Plot the time series predictions
     fig, ax = plt.subplots()
-    ax.plot(years, hybrid_predictions[0, :num_years, 0], marker='o', label='Predicted Orthophosphate')
+    ax.plot(years, lstm_predictions.flatten()[:num_years], marker='o', label='Predicted Pollution Level')
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
     ax.set_title(f'Predicted Pollution Levels Over the Next {num_years} Years')
-    ax.legend()
     st.pyplot(fig)
