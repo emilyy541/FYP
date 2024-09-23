@@ -147,7 +147,7 @@ if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
     # Prepare the input for LSTM (reshape as required by LSTM input)
-    hybrid_predictions = hybrid_nn_model.reshape((input_features.shape[0], 1, input_features.shape[1]))
+    hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
 
     # Predict the next 'num_years' using LSTM
     lstm_predictions = lstm_model.predict(lstm_input)
