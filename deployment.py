@@ -23,17 +23,17 @@ st.write("""
 site = st.selectbox('Select Site Location', ['Homer', 'Seldovia'])
 
 # Inputs for the feature variables (using number_input to ensure they are floats)
-feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)
-feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)
-feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1)
-feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)
-feature_9 = st.number_input('pH', value=0.0, step=0.1)
-feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)
-feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1)
+feature_5 = st.number_input('Temperature (°C)', value=0.0, step=0.1)         
+feature_6 = st.number_input('Salinity (Sal)', value=0.0, step=0.1)           
+feature_7 = st.number_input('Dissolved Oxygen (mg/L)', value=0.0, step=0.1) 
+feature_8 = st.number_input('Depth (m)', value=0.0, step=0.1)                
+feature_9 = st.number_input('pH', value=0.0, step=0.1)                       
+feature_10 = st.number_input('Turbidity (NTU)', value=0.0, step=0.1)         
+feature_11 = st.number_input('Chlorophyll Fluorescence', value=0.0, step=0.1) 
 
 # Placeholder values for engineered features
-feature_12 = 0.0
-feature_13 = 0.0
+feature_12 = 0.0  
+feature_13 = 0.0  
 
 # Convert location to numerical value if needed (encode location)
 location_mapping = {'Homer': 1, 'Seldovia': 0}
@@ -73,19 +73,11 @@ def classify_overall_pollution(individual_status):
 # Function to display alert notifications based on pollution classification
 def display_alert_notification(overall_pollution):
     if overall_pollution == "Light":
-        st.success("""Light Pollution: The pollution levels are low, but it is essential to maintain monitoring 
-                      to protect marine ecosystems and ensure the sustainability of coastal environments. 
-                      Preserving healthy water quality is crucial for supporting marine life and the well-being 
-                      of coastal communities.""")
+        st.success("Light Pollution: The pollution levels are low, but it is essential to maintain monitoring.")
     elif overall_pollution == "Moderate":
-        st.warning("""Moderate Pollution: Pollution levels are moderate, indicating a potential risk to marine biodiversity 
-                      and coastal habitats. Implementing precautionary measures now can help prevent further degradation 
-                      and support the resilience of marine ecosystems as well as the livelihoods that depend on them.""")
+        st.warning("Moderate Pollution: Pollution levels are moderate, indicating a potential risk. It is recommended to take precautionary measures.")
     elif overall_pollution == "Heavy":
-        st.error("""Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental 
-                    risks and prevent severe impacts on marine life and coastal resources. Addressing this issue is crucial 
-                    for preserving the health of our oceans and the communities that rely on them for sustenance 
-                    and economic activities.""")
+        st.error("Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental risks.")
 
 # Store input history and display history table
 if 'history' not in st.session_state:
@@ -148,36 +140,26 @@ if st.button('Predict Current Levels'):
     ax.legend()
     st.pyplot(fig)
 
-# Time Series Prediction using Hybrid Neural Network with adjustable years
+# Time Series Prediction using LSTM with adjustable years
 num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_value=4, value=4)
 
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
-    # Prepare the input for Hybrid Neural Network (reshape LSTM input as required by LSTM input)
-    lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
+    # Prepare the input for LSTM (reshape as required by LSTM input)
+    hybrid_predictions = hybrid_nn_model.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    # Predict the next 'num_years' using Hybrid Neural Network model
-    # Ensure the prediction output matches the required shape
-    hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
-
-    # Check the shape of the predictions
-    st.write(f"Shape of hybrid predictions: {hybrid_predictions.shape}")  # Debugging line
-
-    # Assuming hybrid_predictions has shape (1, num_years, number_of_variables)
-    # Adjust indexing accordingly
-    hybrid_predictions = hybrid_predictions.reshape(num_years, len(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']))
-
+    # Predict the next 'num_years' using LSTM
+    lstm_predictions = lstm_model.predict(lstm_input)
+    
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
 
     # Plot the time series predictions
     fig, ax = plt.subplots()
-    for i, variable in enumerate(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']):
-        ax.plot(years, hybrid_predictions[:, i], marker='o', label=f'Predicted {variable.capitalize()}')  # Corrected indexing
+    ax.plot(years, lstm_predictions.flatten()[:num_years], marker='o', label='Predicted Pollution Level')
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
     ax.set_title(f'Predicted Pollution Levels Over the Next {num_years} Years')
-    ax.legend()
     st.pyplot(fig)
