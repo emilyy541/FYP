@@ -73,15 +73,19 @@ def classify_overall_pollution(individual_status):
 # Function to display alert notifications based on pollution classification
 def display_alert_notification(overall_pollution):
     if overall_pollution == "Light":
-        st.success("Light Pollution: The pollution levels are low, but it is essential to maintain monitoring to protect marine ecosystems and ensure the sustainability of coastal environments. 
-                    Preserving healthy water quality is crucial for supporting marine life and the well-being of coastal communities")
+        st.success("""Light Pollution: The pollution levels are low, but it is essential to maintain monitoring 
+                      to protect marine ecosystems and ensure the sustainability of coastal environments. 
+                      Preserving healthy water quality is crucial for supporting marine life and the well-being 
+                      of coastal communities.""")
     elif overall_pollution == "Moderate":
-        st.warning("Moderate Pollution: Pollution levels are moderate which indicates a potential risk to marine biodiversity and coastal habitats. 
-                    Implementing precautionary measures now can help prevent further degradation and support the resilience of marine ecosystems 
-                    as well as the livelihoods that depend on them.")
+        st.warning("""Moderate Pollution: Pollution levels are moderate, indicating a potential risk to marine biodiversity 
+                      and coastal habitats. Implementing precautionary measures now can help prevent further degradation 
+                      and support the resilience of marine ecosystems as well as the livelihoods that depend on them.""")
     elif overall_pollution == "Heavy":
-        st.error("Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental risks and prevent severe impacts on marine life and coastal resources. 
-                Addressing this issue is crucial for preserving the health of our oceans and the communities that rely on them for sustenance and economic activities.")
+        st.error("""Heavy Pollution: Warning! Pollution levels are high! Immediate action is required to mitigate environmental 
+                    risks and prevent severe impacts on marine life and coastal resources. Addressing this issue is crucial 
+                    for preserving the health of our oceans and the communities that rely on them for sustenance 
+                    and economic activities.""")
 
 # Store input history and display history table
 if 'history' not in st.session_state:
