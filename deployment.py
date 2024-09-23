@@ -154,23 +154,22 @@ num_years = st.slider('Select Number of Years for Prediction', min_value=1, max_
 if st.button(f'Prediction of Nutrient Pollution Levels in Next {num_years} Years'):
     st.subheader(f'Time Series Predictions for Nutrient Pollution for Next {num_years} Years')
 
-    # Prepare the input for Hybrid Neural Network (reshape LSTM input as required by LSTM input)
+    # Prepare the input for the LSTM part of the Hybrid Neural Network
     lstm_input = input_features.reshape((input_features.shape[0], 1, input_features.shape[1]))
 
-    # Predict the next 'num_years' using Hybrid Neural Network model
-    hybrid_predictions = hybrid_nn_model.predict([lstm_input, input_features])
-    
+    # MLP part doesn't need reshaping, use the original input_features directly
+    mlp_input = input_features
+
+    # Predict the next 'num_years' using the Hybrid Neural Network model
+    hybrid_predictions = hybrid_nn_model.predict([lstm_input, mlp_input])
+
     # Generate years for x-axis based on the number of years selected
     years = np.arange(2022, 2022 + num_years)  # Adjust years based on 'num_years'
 
     # Plot the time series predictions
-    fig, ax = plt.subplots()
-    for i, variable in enumerate(['orthophosphate', 'ammonium', 'nitrite_nitrate', 'chlorophyll']):
-        ax.plot(years, hybrid_predictions[0, :, i][:num_years], marker='o', label=f'Predicted {variable.capitalize()}')
     ax.set_xlabel('Year')
     ax.set_xticks(years)  # Set x-axis ticks to display whole years only
     ax.set_ylabel('Nutrient Pollution Level (mg/L)')
     ax.set_title(f'Predicted Pollution Levels Over the Next {num_years} Years')
     ax.legend()
     st.pyplot(fig)
-
